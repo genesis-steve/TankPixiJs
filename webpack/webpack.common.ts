@@ -29,6 +29,10 @@ module.exports = {
 					esModule: false,
 				},
 				type: 'javascript/auto'
+			},
+			{
+				test: /assets(\/|\\)/,
+				use: 'file-loader?name=assets/[hash].[ext]'
 			}
 		]
 	},
