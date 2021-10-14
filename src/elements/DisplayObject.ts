@@ -10,6 +10,7 @@ export interface IDisplayObject {
 	name: string;
 	position?: IPoint;
 	anchor?: IPoint;
+	angle?: number;
 }
 
 export interface IPoint {

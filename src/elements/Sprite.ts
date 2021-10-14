@@ -2,12 +2,15 @@ import { IDisplayObject } from "src/elements/DisplayObject";
 
 export class Sprite extends PIXI.Sprite {
 
+	protected config: ISprite;
+
 	constructor ( config: ISprite ) {
 		super();
 		this.init( config );
 	}
 
 	protected init ( config: ISprite ) {
+		this.config = config;
 		this.name = config.name;
 		this.updateAttribute( config );
 	}

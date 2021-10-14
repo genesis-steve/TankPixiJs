@@ -1,5 +1,5 @@
+import { ITank, MoveDirection, RotateDirection, Tank } from 'src/components/game/elements/Tank';
 import { IGameConfig } from 'src/components/game/GameConfig';
-import { ISprite, Sprite } from 'src/elements/Sprite';
 import { View } from 'src/ui/View';
 
 export class GameView extends View {
@@ -7,7 +7,7 @@ export class GameView extends View {
 	protected config: IGameConfig;
 
 	protected field: PIXI.Sprite;
-	protected tank: Sprite;
+	protected tank: Tank;
 
 	protected init ( config?: IGameConfig ): void {
 		super.init( config );
@@ -20,20 +20,17 @@ export class GameView extends View {
 		this.addChild( this.field );
 	}
 
-	protected createTank ( config: ISprite ): void {
-		this.tank = new Sprite( config );
+	protected createTank ( config: ITank ): void {
+		this.tank = new Tank( config );
 		this.addChild( this.tank );
 	}
 
-	public rotateTank ( direction: TankRotateDirection ): void {
-		const offset: number = ( ( direction === TankRotateDirection.LEFT ) ? -1 : 1 );
-		const rotation: number = offset * ( 90 * Math.PI / 180 ) % 360;
-		this.tank.rotation += rotation;
+	public moveTank ( direction: MoveDirection ): void {
+		this.tank.move( direction );
 	}
 
-}
+	public rotateTank ( direction: RotateDirection ): void {
+		this.tank.rotate( direction );
+	}
 
-export enum TankRotateDirection {
-	LEFT,
-	RIGHT
 }

@@ -1,8 +1,9 @@
 import { Inject } from 'typescript-ioc';
-import { GameView, TankRotateDirection } from 'src/components/game/GameView';
+import { GameView } from 'src/components/game/GameView';
 import { IKeyboardEventData, KeyboardManager } from 'src/core/KeyboardManager';
 import { Controller } from 'src/ui/Controller';
 import { GameConfig, IGameConfig } from 'src/components/game/GameConfig';
+import { MoveDirection, RotateDirection } from 'src/components/game/elements/Tank';
 
 export class GameController extends Controller {
 
@@ -25,10 +26,16 @@ export class GameController extends Controller {
 	protected onKeyDown ( data: IKeyboardEventData ): void {
 		switch ( data.key ) {
 			case 'ArrowLeft':
-				this.view.rotateTank( TankRotateDirection.LEFT );
+				this.view.rotateTank( RotateDirection.LEFT );
 				break;
 			case 'ArrowRight':
-				this.view.rotateTank( TankRotateDirection.RIGHT );
+				this.view.rotateTank( RotateDirection.RIGHT );
+				break;
+			case 'ArrowUp':
+				this.view.moveTank( MoveDirection.FORWARD );
+				break;
+			case 'ArrowDown':
+				this.view.moveTank( MoveDirection.BACKWARD );
 				break;
 		}
 	}
