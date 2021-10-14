@@ -1,17 +1,18 @@
-export class GameView extends PIXI.Container {
+import { IGameConfig } from 'src/components/game/GameConfig';
+import { ISprite, Sprite } from 'src/elements/Sprite';
+import { View } from 'src/ui/View';
+
+export class GameView extends View {
+
+	protected config: IGameConfig;
 
 	protected field: PIXI.Sprite;
-	protected tank: PIXI.Sprite;
-	protected isRotate: boolean = false;
+	protected tank: Sprite;
 
-	constructor () {
-		super();
-		this.createElements();
-	}
-
-	protected createElements (): void {
+	protected init ( config?: IGameConfig ): void {
+		super.init( config );
 		this.createField();
-		this.createTank();
+		this.createTank( this.config.tank );
 	}
 
 	protected createField (): void {
@@ -19,11 +20,8 @@ export class GameView extends PIXI.Container {
 		this.addChild( this.field );
 	}
 
-	protected createTank (): void {
-		this.tank = new PIXI.Sprite();
-		this.tank.anchor.set( 0.5, 0.5 );
-		this.tank.position.set( 640, 360 );
-		this.tank.texture = PIXI.utils.TextureCache[ 'tank.png' ];
+	protected createTank ( config: ISprite ): void {
+		this.tank = new Sprite( config );
 		this.addChild( this.tank );
 	}
 

@@ -7,6 +7,8 @@ import { GameController } from 'src/components/game/GameController';
 import { UIController } from 'src/components/ui/UIController';
 import { AssetLoader } from 'src/utils/AssetLoader';
 import * as AssetList from 'src/config/AssetList';
+import { Viewport } from 'src/core/Viewport';
+import { KeyboardManager } from 'src/core/KeyboardManager';
 
 window.onload = () => {
 	new GmaeApplication();
@@ -15,6 +17,8 @@ window.onload = () => {
 export class GmaeApplication {
 
 	protected assetLoader: AssetLoader;
+	protected viewport: Viewport;
+	protected keyboardManager: KeyboardManager;
 
 	protected appConfig: IMainConfig;
 	protected mainContainer: HTMLDivElement;
@@ -30,6 +34,8 @@ export class GmaeApplication {
 		this.mainContainer = <HTMLDivElement> document.getElementById( 'mainContainer' );
 		this.assetLoader = new AssetLoader();
 		this.assetLoader.loadResource( AssetList.list );
+		this.viewport = new Viewport( { width: this.appConfig.width, height: this.appConfig.height } );
+		this.keyboardManager = new KeyboardManager();
 		this.addListners();
 		this.tickStart();
 	}

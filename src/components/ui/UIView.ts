@@ -1,3 +1,5 @@
-export class UIView extends PIXI.Container {
+import { View } from 'src/ui/View';
+
+export class UIView extends View {
 
 }

@@ -14,7 +14,6 @@ export class KeyboardManager {
 		const data: IKeyboardEventData = {
 			key: e.key
 		};
-		console.error( 'data : ', data );
 		this.onKeyDownSignal.dispatch( data );
 	}
 }

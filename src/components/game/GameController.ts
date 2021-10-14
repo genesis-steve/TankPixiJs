@@ -1,20 +1,20 @@
 import { Inject } from 'typescript-ioc';
 import { GameView, TankRotateDirection } from 'src/components/game/GameView';
 import { IKeyboardEventData, KeyboardManager } from 'src/core/KeyboardManager';
+import { Controller } from 'src/ui/Controller';
+import { GameConfig, IGameConfig } from 'src/components/game/GameConfig';
 
-export class GameController {
+export class GameController extends Controller {
 
 	@Inject
 	protected keyboardManager: KeyboardManager;
 
+	protected config: IGameConfig;
 	protected view: GameView;
 
-	public get mainContainer (): GameView {
-		return this.view;
-	}
-
-	constructor () {
-		this.view = new GameView();
+	protected init (): void {
+		this.config = new GameConfig();
+		this.view = new GameView( this.config );
 		this.addListeners();
 	}
 
