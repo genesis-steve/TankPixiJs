@@ -10,6 +10,7 @@ import * as AssetList from 'src/config/AssetList';
 import { Viewport } from 'src/core/Viewport';
 import { KeyboardManager } from 'src/core/KeyboardManager';
 import { Inject } from 'typescript-ioc';
+import { GamePadManager } from 'src/core/GamePadManager';
 
 window.onload = () => {
 	new GmaeApplication();
@@ -22,6 +23,9 @@ export class GmaeApplication {
 
 	@Inject
 	protected keyboardManager: KeyboardManager;
+
+	@Inject
+	protected gamePadManager: GamePadManager;
 
 	protected assetLoader: AssetLoader;
 
@@ -74,11 +78,30 @@ export class GmaeApplication {
 	}
 
 	protected tickStart (): void {
-		function animate () {
-			requestAnimationFrame( animate )
-			TWEEN.update()
+		requestAnimationFrame( () => {
+			this.animate()
+		} );
+	}
+
+	protected animate (): void {
+		TWEEN.update();
+		this.updateKeyboard();
+		this.updateGamePad();
+		requestAnimationFrame( () => {
+			this.animate()
+		} );
+	}
+
+	protected updateKeyboard (): void {
+		this.keyboardManager.updateKeyboard();
+	}
+
+	protected updateGamePad (): void {
+		let gamepads: Array<Gamepad> = navigator.getGamepads();
+		if ( !gamepads || !gamepads[ 0 ] ) {
+			return;
 		}
-		requestAnimationFrame( animate )
+		this.gamePadManager.updateGamePad( gamepads[ 0 ] );
 	}
 
 }

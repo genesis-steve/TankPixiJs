@@ -11,7 +11,7 @@ export class GameConfig implements IGameConfig {
 		position: { x: 640, y: 360 },
 		anchor: { x: 0.5, y: 0.5 },
 		assetName: 'tank.png',
-		moveSpeed: 10
+		moveSpeeds: [ 5, 10 ]
 	};
 
 	public pixelField: IPixelField = {
