@@ -1,3 +1,4 @@
+import { IPixelField, PixelField, ScrollDirection } from 'src/components/game/elements/PixelField';
 import { ITank, MoveDirection, RotateDirection, Tank } from 'src/components/game/elements/Tank';
 import { IGameConfig } from 'src/components/game/GameConfig';
 import { View } from 'src/ui/View';
@@ -6,17 +7,17 @@ export class GameView extends View {
 
 	protected config: IGameConfig;
 
-	protected field: PIXI.Sprite;
+	protected field: PixelField;
 	protected tank: Tank;
 
 	protected init ( config?: IGameConfig ): void {
 		super.init( config );
-		this.createField();
+		this.createField( this.config.pixelField );
 		this.createTank( this.config.tank );
 	}
 
-	protected createField (): void {
-		this.field = new PIXI.Sprite();
+	protected createField ( config: IPixelField ): void {
+		this.field = new PixelField( config );
 		this.addChild( this.field );
 	}
 
@@ -26,7 +27,22 @@ export class GameView extends View {
 	}
 
 	public moveTank ( direction: MoveDirection ): void {
-		this.tank.move( direction );
+		// this.tank.move( direction );	//* legacy
+		this.field.scroll( this.getFieldScrollDirection( direction ), 10 );
+	}
+
+	protected getFieldScrollDirection ( direction: MoveDirection ): ScrollDirection {
+		const angle: number = this.tank.angle + ( direction === MoveDirection.FORWARD ? 0 : 1 ) * 180 % 360;
+		switch ( angle ) {
+			case 0:
+				return ScrollDirection.LEFT;
+			case 90:
+				return ScrollDirection.UP;
+			case 180:
+				return ScrollDirection.RIGHT;
+			case 270:
+				return ScrollDirection.DOWN;
+		}
 	}
 
 	public rotateTank ( direction: RotateDirection ): void {
