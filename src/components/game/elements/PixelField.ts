@@ -16,7 +16,7 @@ export class PixelField extends View {
 
 	protected startPoint: IPoint;
 	protected endPoint: IPoint;
-	protected size: IPoint;
+	protected scrollUpdateDistance: IPoint;
 
 	constructor ( config: IPixelField ) {
 		super( config );
@@ -29,28 +29,27 @@ export class PixelField extends View {
 
 	protected createTiles ( config: IPixelField ): void {
 		this.tiles = new Array<Sprite>();
-		const fieldRange: IFieldRange = config.fieldRange;
 		this.startPoint = {
-			x: - fieldRange.borderOffset.x,
-			y: - fieldRange.borderOffset.y
+			x: - config.pixelSize * 2,
+			y: - config.pixelSize * 2
 		};
 		this.endPoint = {
-			x: this.viewport.width + fieldRange.borderOffset.x,
-			y: this.viewport.height + fieldRange.borderOffset.y
+			x: Math.ceil( this.viewport.width / config.pixelSize ) * config.pixelSize,
+			y: Math.ceil( this.viewport.height / config.pixelSize ) * config.pixelSize
 		};
-		this.size = { x: this.endPoint.x - this.startPoint.x, y: this.endPoint.y - this.startPoint.y };
-		const pixelX: number = this.size.x / fieldRange.pixelSize;
-		const pixelY: number = this.size.y / fieldRange.pixelSize;
+		const pixelX: number = ( this.endPoint.x - this.startPoint.x ) / config.pixelSize;
+		const pixelY: number = ( this.endPoint.y - this.startPoint.y ) / config.pixelSize;
 		for ( let i: number = 0; i < pixelX; i++ ) {
 			for ( let j: number = 0; j < pixelY; j++ ) {
 				const tile: Sprite = this.createRandomTile();
-				const posX: number = this.startPoint.x + fieldRange.pixelSize * i;
-				const posY: number = this.startPoint.y + fieldRange.pixelSize * j;
+				const posX: number = this.startPoint.x + config.pixelSize * i;
+				const posY: number = this.startPoint.y + config.pixelSize * j;
 				tile.position.set( posX, posY );
 				this.addChild( tile );
 				this.tiles.push( tile );
 			}
 		}
+		this.scrollUpdateDistance = { x: config.pixelSize * pixelX, y: config.pixelSize * pixelY };
 	}
 
 	protected createRandomTile (): Sprite {
@@ -80,16 +79,16 @@ export class PixelField extends View {
 		this.tiles.forEach( tile => {
 			let isUpdate: boolean = false;
 			if ( tile.position.x < this.startPoint.x ) {
-				tile.position.x += this.size.x;
+				tile.position.x += this.scrollUpdateDistance.x;
 				isUpdate = true;
 			} else if ( tile.position.x >= this.endPoint.x ) {
-				tile.position.x -= this.size.x;
+				tile.position.x -= this.scrollUpdateDistance.x;
 				isUpdate = true;
 			} else if ( tile.position.y < this.startPoint.y ) {
-				tile.position.y += this.size.y;
+				tile.position.y += this.scrollUpdateDistance.y;
 				isUpdate = true;
 			} else if ( tile.position.y >= this.endPoint.y ) {
-				tile.position.y -= this.size.y;
+				tile.position.y -= this.scrollUpdateDistance.y;
 				isUpdate = true;
 			}
 			if ( isUpdate ) {
@@ -106,11 +105,6 @@ export class PixelField extends View {
 
 export interface IPixelField extends IDisplayObject {
 	tiles: Array<string>;
-	fieldRange: IFieldRange;
-}
-
-export interface IFieldRange {
-	borderOffset: IPoint;
 	pixelSize: number;
 }
 
