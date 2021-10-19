@@ -4,8 +4,8 @@ import * as MiniSignal from 'mini-signals';
 @Singleton
 export class GamePadManager {
 
-	protected static readonly SENSE_INTENSITY_STRONG: number = 0.8
-	protected static readonly SENSE_INTENSITY_WEAK: number = 0.4
+	protected static readonly SENSE_INTENSITY_STRONG: number = 0.9
+	protected static readonly SENSE_INTENSITY_WEAK: number = 0.3
 
 	public onButtonUpdateSignal: MiniSignal = new MiniSignal();
 	public onAxesUpdateSignal: MiniSignal = new MiniSignal();

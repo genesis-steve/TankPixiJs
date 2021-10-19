@@ -4,13 +4,6 @@ export class Tank extends Sprite {
 
 	protected config: ITank;
 
-	protected moveSpeed: number;
-
-	public updateAttribute ( config: ITank ): void {
-		super.updateAttribute( config );
-		this.moveSpeed = config.moveSpeed;
-	}
-
 	public rotate ( direction: RotateDirection ): void {
 		const offset: number = ( ( direction === RotateDirection.LEFT ) ? -1 : 1 );
 		const angle: number = offset * 90;
@@ -20,7 +13,7 @@ export class Tank extends Sprite {
 }
 
 export interface ITank extends ISprite {
-	moveSpeed: number;
+	moveSpeeds: Array<number>;
 }
 
 export enum MoveDirection {

@@ -26,8 +26,8 @@ export class GameView extends View {
 		this.addChild( this.tank );
 	}
 
-	public moveTank ( direction: MoveDirection ): void {
-		this.field.scroll( this.getFieldScrollDirection( direction ), 10 );
+	public moveTank ( direction: MoveDirection, speed: number ): void {
+		this.field.scroll( this.getFieldScrollDirection( direction ), speed );
 	}
 
 	protected getFieldScrollDirection ( direction: MoveDirection ): ScrollDirection {

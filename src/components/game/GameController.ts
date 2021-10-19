@@ -4,7 +4,7 @@ import { IKeyboardEventData, KeyboardButton, KeyboardManager } from 'src/core/Ke
 import { Controller } from 'src/ui/Controller';
 import { GameConfig, IGameConfig } from 'src/components/game/GameConfig';
 import { MoveDirection, RotateDirection } from 'src/components/game/elements/Tank';
-import { GamePadAxesKey, GamePadButtonKey, GamePadManager, IGamePadAxesEventData, IGamePadButtonEventData } from 'src/core/GamePadManager';
+import { GamePadAxesIntensity, GamePadAxesKey, GamePadButtonKey, GamePadManager, IGamePadAxesEventData, IGamePadButtonEventData } from 'src/core/GamePadManager';
 
 export class GameController extends Controller {
 
@@ -44,10 +44,10 @@ export class GameController extends Controller {
 	protected onKeyPress ( data: IKeyboardEventData ): void {
 		switch ( data.key ) {
 			case KeyboardButton.ARROW_UP:
-				this.view.moveTank( MoveDirection.FORWARD );
+				this.view.moveTank( MoveDirection.FORWARD, this.config.tank.moveSpeeds[ 1 ] );
 				break;
 			case KeyboardButton.ARROW_DOWN:
-				this.view.moveTank( MoveDirection.BACKWARD );
+				this.view.moveTank( MoveDirection.BACKWARD, this.config.tank.moveSpeeds[ 1 ] );
 				break;
 		}
 	}
@@ -57,12 +57,12 @@ export class GameController extends Controller {
 			switch ( button.key ) {
 				case GamePadButtonKey.PAD_UP:
 					if ( button.isPress ) {
-						this.view.moveTank( MoveDirection.FORWARD );
+						this.view.moveTank( MoveDirection.FORWARD, this.config.tank.moveSpeeds[ 1 ] );
 					}
 					break;
 				case GamePadButtonKey.PAD_DOWN:
 					if ( button.isPress ) {
-						this.view.moveTank( MoveDirection.BACKWARD );
+						this.view.moveTank( MoveDirection.BACKWARD, this.config.tank.moveSpeeds[ 1 ] );
 					}
 					break;
 				case GamePadButtonKey.PAD_LEFT:
@@ -92,10 +92,12 @@ export class GameController extends Controller {
 					}
 					break;
 				case GamePadAxesKey.AXES_LY:
+					const speedIndex: number = axes.intensity === GamePadAxesIntensity.WEAK ? 0 : 1;
+					const speed: number = this.config.tank.moveSpeeds[ speedIndex ];
 					if ( axes.isPositive ) {
-						this.view.moveTank( MoveDirection.BACKWARD );
+						this.view.moveTank( MoveDirection.BACKWARD, speed );
 					} else {
-						this.view.moveTank( MoveDirection.FORWARD );
+						this.view.moveTank( MoveDirection.FORWARD, speed );
 					}
 					break;
 			}
