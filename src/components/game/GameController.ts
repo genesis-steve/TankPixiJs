@@ -4,7 +4,7 @@ import { IKeyboardEventData, KeyboardButton, KeyboardManager } from 'src/core/Ke
 import { Controller } from 'src/ui/Controller';
 import { GameConfig, IGameConfig } from 'src/components/game/GameConfig';
 import { MoveDirection, RotateDirection } from 'src/components/game/elements/Tank';
-import { GamePadKey, GamePadManager, IGamePadEventData } from 'src/core/GamePadManager';
+import { GamePadAxesKey, GamePadButtonKey, GamePadManager, IGamePadAxesEventData, IGamePadButtonEventData } from 'src/core/GamePadManager';
 
 export class GameController extends Controller {
 
@@ -26,7 +26,8 @@ export class GameController extends Controller {
 	protected addListeners (): void {
 		this.keyboardManager.onKeyDownSignal.add( this.onKeyDown, this );
 		this.keyboardManager.onKeyPressSignal.add( this.onKeyPress, this );
-		this.gamePadManager.onGamePadPressSignal.add( this.onGamePadPress, this );
+		this.gamePadManager.onButtonUpdateSignal.add( this.onGamePadButtonUpdate, this );
+		this.gamePadManager.onAxesUpdateSignal.add( this.onGamePadAxesUpdate, this );
 	}
 
 	protected onKeyDown ( data: IKeyboardEventData ): void {
@@ -51,27 +52,50 @@ export class GameController extends Controller {
 		}
 	}
 
-	protected onGamePadPress ( data: IGamePadEventData ): void {
+	protected onGamePadButtonUpdate ( data: IGamePadButtonEventData ): void {
 		data.buttonsUpdateState.forEach( button => {
 			switch ( button.key ) {
-				case GamePadKey.PAD_UP:
+				case GamePadButtonKey.PAD_UP:
 					if ( button.isPress ) {
 						this.view.moveTank( MoveDirection.FORWARD );
 					}
 					break;
-				case GamePadKey.PAD_DOWN:
+				case GamePadButtonKey.PAD_DOWN:
 					if ( button.isPress ) {
 						this.view.moveTank( MoveDirection.BACKWARD );
 					}
 					break;
-				case GamePadKey.PAD_LEFT:
+				case GamePadButtonKey.PAD_LEFT:
 					if ( button.isTouch ) {
 						this.view.rotateTank( RotateDirection.LEFT );
 					}
 					break;
-				case GamePadKey.PAD_RIGHT:
+				case GamePadButtonKey.PAD_RIGHT:
 					if ( button.isTouch ) {
 						this.view.rotateTank( RotateDirection.RIGHT );
+					}
+					break;
+			}
+		} );
+	}
+
+	protected onGamePadAxesUpdate ( data: IGamePadAxesEventData ): void {
+		data.axesUpdateState.forEach( axes => {
+			switch ( axes.key ) {
+				case GamePadAxesKey.AXES_LX:
+					if ( axes.isTouch ) {
+						if ( axes.isPositive ) {
+							this.view.rotateTank( RotateDirection.RIGHT );
+						} else {
+							this.view.rotateTank( RotateDirection.LEFT );
+						}
+					}
+					break;
+				case GamePadAxesKey.AXES_LY:
+					if ( axes.isPositive ) {
+						this.view.moveTank( MoveDirection.BACKWARD );
+					} else {
+						this.view.moveTank( MoveDirection.FORWARD );
 					}
 					break;
 			}

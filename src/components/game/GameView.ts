@@ -31,7 +31,7 @@ export class GameView extends View {
 	}
 
 	protected getFieldScrollDirection ( direction: MoveDirection ): ScrollDirection {
-		const angle: number = this.tank.angle + ( direction === MoveDirection.FORWARD ? 0 : 1 ) * 180 % 360;
+		const angle: number = ( this.tank.angle + ( direction === MoveDirection.FORWARD ? 0 : 1 ) * 180 ) % 360;
 		switch ( angle ) {
 			case 0:
 				return ScrollDirection.LEFT;
