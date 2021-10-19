@@ -11,25 +11,6 @@ export class Tank extends Sprite {
 		this.moveSpeed = config.moveSpeed;
 	}
 
-	public move ( direction: MoveDirection ): void {
-		const offset: number = ( ( direction === MoveDirection.BACKWARD ) ? -1 : 1 );
-		const distance: number = this.moveSpeed * offset;
-		switch ( this.angle ) {
-			case 0:
-				this.position.x += distance;
-				break;
-			case 90:
-				this.position.y += distance;
-				break;
-			case 180:
-				this.position.x -= distance;
-				break;
-			case 270:
-				this.position.y -= distance;
-				break;
-		}
-	}
-
 	public rotate ( direction: RotateDirection ): void {
 		const offset: number = ( ( direction === RotateDirection.LEFT ) ? -1 : 1 );
 		const angle: number = offset * 90;

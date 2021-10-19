@@ -27,7 +27,6 @@ export class GameView extends View {
 	}
 
 	public moveTank ( direction: MoveDirection ): void {
-		// this.tank.move( direction );	//* legacy
 		this.field.scroll( this.getFieldScrollDirection( direction ), 10 );
 	}
 

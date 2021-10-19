@@ -21,10 +21,7 @@ export class GameConfig implements IGameConfig {
 			'fieldTile2.png',
 			'fieldTile3.png'
 		],
-		fieldRange: {
-			borderOffset: { x: 100, y: 100 },
-			pixelSize: 50
-		}
+		pixelSize: 50
 	};
 
 }
