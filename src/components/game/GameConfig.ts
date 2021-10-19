@@ -17,21 +17,9 @@ export class GameConfig implements IGameConfig {
 	public pixelField: IPixelField = {
 		name: 'pixelField',
 		tiles: [
-			{
-				name: 'fieldTile1',
-				assetName: 'fieldTile1.png',
-
-			},
-			{
-				name: 'fieldTile2',
-				assetName: 'fieldTile2.png',
-
-			},
-			{
-				name: 'fieldTile3',
-				assetName: 'fieldTile3.png',
-
-			}
+			'fieldTile1.png',
+			'fieldTile2.png',
+			'fieldTile3.png'
 		],
 		fieldRange: {
 			borderOffset: { x: 100, y: 100 },
