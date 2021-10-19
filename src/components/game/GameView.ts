@@ -1,3 +1,4 @@
+import { IPixelField, PixelField } from 'src/components/game/elements/PixelField';
 import { ITank, MoveDirection, RotateDirection, Tank } from 'src/components/game/elements/Tank';
 import { IGameConfig } from 'src/components/game/GameConfig';
 import { View } from 'src/ui/View';
@@ -6,17 +7,17 @@ export class GameView extends View {
 
 	protected config: IGameConfig;
 
-	protected field: PIXI.Sprite;
+	protected field: PixelField;
 	protected tank: Tank;
 
 	protected init ( config?: IGameConfig ): void {
 		super.init( config );
-		this.createField();
+		this.createField( this.config.pixelField );
 		this.createTank( this.config.tank );
 	}
 
-	protected createField (): void {
-		this.field = new PIXI.Sprite();
+	protected createField ( config: IPixelField ): void {
+		this.field = new PixelField( config );
 		this.addChild( this.field );
 	}
 

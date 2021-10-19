@@ -9,6 +9,7 @@ import { AssetLoader } from 'src/utils/AssetLoader';
 import * as AssetList from 'src/config/AssetList';
 import { Viewport } from 'src/core/Viewport';
 import { KeyboardManager } from 'src/core/KeyboardManager';
+import { Inject } from 'typescript-ioc';
 
 window.onload = () => {
 	new GmaeApplication();
@@ -16,9 +17,13 @@ window.onload = () => {
 
 export class GmaeApplication {
 
-	protected assetLoader: AssetLoader;
+	@Inject
 	protected viewport: Viewport;
+
+	@Inject
 	protected keyboardManager: KeyboardManager;
+
+	protected assetLoader: AssetLoader;
 
 	protected appConfig: IMainConfig;
 	protected mainContainer: HTMLDivElement;
@@ -32,10 +37,10 @@ export class GmaeApplication {
 		document.title = this.appConfig.title;
 		document.body.style.overflow = 'hidden';
 		this.mainContainer = <HTMLDivElement> document.getElementById( 'mainContainer' );
+		this.viewport.width = this.appConfig.width;
+		this.viewport.height = this.appConfig.height;
 		this.assetLoader = new AssetLoader();
 		this.assetLoader.loadResource( AssetList.list );
-		this.viewport = new Viewport( { width: this.appConfig.width, height: this.appConfig.height } );
-		this.keyboardManager = new KeyboardManager();
 		this.addListners();
 		this.tickStart();
 	}
