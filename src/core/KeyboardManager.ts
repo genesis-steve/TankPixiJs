@@ -8,18 +8,34 @@ export class KeyboardManager {
 	public onKeyUpSignal: MiniSignal = new MiniSignal();
 	public onKeyPressSignal: MiniSignal = new MiniSignal();
 
-	public keysState: Array<IKeyboardButtonState> = new Array<IKeyboardButtonState>();
+	public keysState: Array<IKeyboardButtonState>;
 
 	constructor () {
+		this.initKeysState();
+		this.initSignals();
+		this.addEventListeners();
+	}
+
+	protected initKeysState (): void {
+		this.keysState = new Array<IKeyboardButtonState>();
+	}
+
+	protected initSignals (): void {
+		this.onKeyDownSignal = new MiniSignal();
+		this.onKeyUpSignal = new MiniSignal();
+		this.onKeyPressSignal = new MiniSignal();
+	}
+
+	protected addEventListeners (): void {
 		window.addEventListener( 'keydown', this.onKeyDown.bind( this ) );
 		window.addEventListener( 'keyup', this.onKeyUp.bind( this ) );
 	}
 
 	protected onKeyDown ( e: KeyboardEvent ): void {
-		const keyState = this.keysState.find( state => state.key === e.key );
+		const keyState = this.keysState.find( state => state.code === e.key );
 		if ( !keyState ) {
 			this.keysState.push( {
-				key: e.key,
+				code: e.key,
 				isPress: true,
 				isTouch: true
 			} );
@@ -28,20 +44,20 @@ export class KeyboardManager {
 			keyState.isPress = true;
 		}
 		const data: IKeyboardEventData = {
-			key: e.key
+			code: e.key
 		};
 		this.onKeyDownSignal.dispatch( data );
 	}
 
 	protected onKeyUp ( e: KeyboardEvent ): void {
-		const keyState = this.keysState.find( state => state.key === e.key );
+		const keyState = this.keysState.find( state => state.code === e.key );
 		if ( !keyState ) {
 			return;
 		}
 		keyState.isTouch = false;
 		keyState.isPress = false;
 		const data: IKeyboardEventData = {
-			key: e.key
+			code: e.key
 		};
 		this.onKeyUpSignal.dispatch( data );
 	}
@@ -50,7 +66,7 @@ export class KeyboardManager {
 		this.keysState.forEach( state => {
 			if ( state.isPress ) {
 				const data: IKeyboardEventData = {
-					key: state.key
+					code: state.code
 				};
 				this.onKeyPressSignal.dispatch( data );
 			}
@@ -60,18 +76,19 @@ export class KeyboardManager {
 }
 
 export interface IKeyboardButtonState {
-	key: string;
+	code: string;
 	isPress: boolean;
 	isTouch: boolean;
 }
 
 export interface IKeyboardEventData {
-	key: string;
+	code: string;
 }
 
 export enum KeyboardButton {
 	ARROW_UP = 'ArrowUp',
 	ARROW_DOWN = 'ArrowDown',
 	ARROW_LEFT = 'ArrowLeft',
-	ARROW_RIGHT = 'ArrowRight'
+	ARROW_RIGHT = 'ArrowRight',
+	SPACE = 'Space'
 }

@@ -26,12 +26,13 @@ export class GameController extends Controller {
 	protected addListeners (): void {
 		this.keyboardManager.onKeyDownSignal.add( this.onKeyDown, this );
 		this.keyboardManager.onKeyPressSignal.add( this.onKeyPress, this );
+		this.keyboardManager.onKeyUpSignal.add( this.onKeyUp, this );
 		this.gamePadManager.onButtonUpdateSignal.add( this.onGamePadButtonUpdate, this );
 		this.gamePadManager.onAxesUpdateSignal.add( this.onGamePadAxesUpdate, this );
 	}
 
 	protected onKeyDown ( data: IKeyboardEventData ): void {
-		switch ( data.key ) {
+		switch ( data.code ) {
 			case KeyboardButton.ARROW_LEFT:
 				this.view.rotateTank( RotateDirection.LEFT );
 				break;
@@ -41,8 +42,12 @@ export class GameController extends Controller {
 		}
 	}
 
+	protected onKeyUp ( data: IKeyboardEventData ): void {
+		//
+	}
+
 	protected onKeyPress ( data: IKeyboardEventData ): void {
-		switch ( data.key ) {
+		switch ( data.code ) {
 			case KeyboardButton.ARROW_UP:
 				this.view.moveTank( MoveDirection.FORWARD, this.config.tank.moveSpeeds[ 1 ] );
 				break;
