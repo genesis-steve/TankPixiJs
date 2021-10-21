@@ -36,7 +36,23 @@ export class GameView extends View {
 	}
 
 	public moveTank ( direction: MoveDirection, speed: number ): void {
-		this.field.scroll( this.getFieldScrollDirection( direction ), speed );
+		const scrollDirection: ScrollDirection = this.getFieldScrollDirection( direction );
+		if ( this.isTankMovable( scrollDirection ) ) {
+			this.field.scroll( scrollDirection, speed );
+		}
+	}
+
+	protected isTankMovable ( direction: ScrollDirection ): boolean {
+		switch ( direction ) {
+			case ScrollDirection.LEFT:
+				return this.field.position.x + this.field.realWidth > this.tank.position.x + this.tank.width / 2;
+			case ScrollDirection.UP:
+				return this.field.position.y + this.field.realHeight > this.tank.position.y + this.tank.height / 2;
+			case ScrollDirection.RIGHT:
+				return this.field.position.x < this.tank.position.x - this.tank.width / 2;
+			case ScrollDirection.DOWN:
+				return this.field.position.y < this.tank.position.y - this.tank.height / 2;
+		}
 	}
 
 	protected getFieldScrollDirection ( direction: MoveDirection ): ScrollDirection {

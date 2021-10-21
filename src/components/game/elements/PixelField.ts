@@ -21,6 +21,14 @@ export class PixelField extends View {
 		super( config );
 	}
 
+	public get realWidth (): number {
+		return this.config.pixelSize * this.config.pixelMap[ 0 ].length;
+	}
+
+	public get realHeight (): number {
+		return this.config.pixelSize * this.config.pixelMap.length;
+	}
+
 	protected init ( config: IPixelField ): void {
 		super.init( config );
 		this.createTiles( config );
