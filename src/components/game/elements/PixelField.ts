@@ -16,10 +16,17 @@ export class PixelField extends View {
 
 	protected startPoint: IPoint;
 	protected endPoint: IPoint;
-	protected scrollUpdateDistance: IPoint;
 
 	constructor ( config: IPixelField ) {
 		super( config );
+	}
+
+	public get realWidth (): number {
+		return this.config.pixelSize * this.config.pixelMap[ 0 ].length;
+	}
+
+	public get realHeight (): number {
+		return this.config.pixelSize * this.config.pixelMap.length;
 	}
 
 	protected init ( config: IPixelField ): void {
@@ -37,25 +44,19 @@ export class PixelField extends View {
 			x: Math.ceil( this.viewport.width / config.pixelSize ) * config.pixelSize,
 			y: Math.ceil( this.viewport.height / config.pixelSize ) * config.pixelSize
 		};
-		const pixelX: number = ( this.endPoint.x - this.startPoint.x ) / config.pixelSize;
-		const pixelY: number = ( this.endPoint.y - this.startPoint.y ) / config.pixelSize;
-		for ( let i: number = 0; i < pixelX; i++ ) {
-			for ( let j: number = 0; j < pixelY; j++ ) {
-				const tile: Sprite = this.createRandomTile();
-				const posX: number = this.startPoint.x + config.pixelSize * i;
-				const posY: number = this.startPoint.y + config.pixelSize * j;
-				tile.position.set( posX, posY );
+		this.config.pixelMap.forEach( ( rows, i ) => {
+			rows.forEach( ( texture, j ) => {
+				const tile = new Sprite( { name: 'tile' } );
+				tile.texture = PIXI.utils.TextureCache[ texture ];
+				tile.position.set( this.config.pixelSize * i, this.config.pixelSize * j );
 				this.addChild( tile );
 				this.tiles.push( tile );
-			}
-		}
-		this.scrollUpdateDistance = { x: config.pixelSize * pixelX, y: config.pixelSize * pixelY };
-	}
-
-	protected createRandomTile (): Sprite {
-		const tile: Sprite = new Sprite( { name: 'tile' } )
-		tile.texture = this.getRandomTileTexture();
-		return tile;
+			} );
+		} )
+		this.position.set(
+			this.viewport.width / 2 - this.config.positionOnMap.x,
+			this.viewport.height / 2 - this.config.positionOnMap.y
+		);
 	}
 
 	public scroll ( direction: ScrollDirection, speed: number ): void {
@@ -77,39 +78,28 @@ export class PixelField extends View {
 				// this.tiles.forEach( tile => tile.position.x += speed );
 				break;
 		}
-		this.updateTileOverBorder();
+		this.updateTileVisible();
 	}
-	protected updateTileOverBorder (): void {
+
+	protected updateTileVisible (): void {
 		this.tiles.forEach( tile => {
-			let isUpdate: boolean = false;
-			if ( tile.getGlobalPosition().x < this.startPoint.x ) {
-				tile.position.x += this.scrollUpdateDistance.x;
-				isUpdate = true;
-			} else if ( tile.getGlobalPosition().x >= this.endPoint.x ) {
-				tile.position.x -= this.scrollUpdateDistance.x;
-				isUpdate = true;
-			} else if ( tile.getGlobalPosition().y < this.startPoint.y ) {
-				tile.position.y += this.scrollUpdateDistance.y;
-				isUpdate = true;
-			} else if ( tile.getGlobalPosition().y >= this.endPoint.y ) {
-				tile.position.y -= this.scrollUpdateDistance.y;
-				isUpdate = true;
-			}
-			if ( isUpdate ) {
-				tile.texture = this.getRandomTileTexture();
-			}
+			tile.renderable = !this.isExceedBorder( tile );
 		} )
 	}
 
-	protected getRandomTileTexture (): PIXI.Texture {
-		const randomIndex: number = Math.floor( Math.random() * this.config.tiles.length );
-		return PIXI.utils.TextureCache[ this.config.tiles[ randomIndex ] ];
+	protected isExceedBorder ( tile: Sprite ): boolean {
+		return tile.getGlobalPosition().x <= this.startPoint.x
+			|| tile.getGlobalPosition().x >= this.endPoint.x
+			|| tile.getGlobalPosition().y <= this.startPoint.y
+			|| tile.getGlobalPosition().y >= this.endPoint.y;
 	}
 }
 
 export interface IPixelField extends IDisplayObject {
+	positionOnMap: IPoint;
 	tiles: Array<string>;
 	pixelSize: number;
+	pixelMap: Array<Array<string>>;
 }
 
 export enum ScrollDirection {
