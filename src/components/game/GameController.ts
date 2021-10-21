@@ -39,6 +39,9 @@ export class GameController extends Controller {
 			case KeyboardButton.ARROW_RIGHT:
 				this.view.rotateTank( RotateDirection.RIGHT );
 				break;
+			case KeyboardButton.SPACE:
+				this.view.shoot();
+				break;
 		}
 	}
 
@@ -78,6 +81,11 @@ export class GameController extends Controller {
 				case GamePadButtonKey.PAD_RIGHT:
 					if ( button.isTouch ) {
 						this.view.rotateTank( RotateDirection.RIGHT );
+					}
+					break;
+				case GamePadButtonKey.PAD_A:
+					if ( button.isTouch ) {
+						this.view.shoot();
 					}
 					break;
 			}

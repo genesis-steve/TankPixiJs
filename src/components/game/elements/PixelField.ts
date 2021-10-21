@@ -61,16 +61,20 @@ export class PixelField extends View {
 	public scroll ( direction: ScrollDirection, speed: number ): void {
 		switch ( direction ) {
 			case ScrollDirection.UP:
-				this.tiles.forEach( tile => tile.position.y -= speed );
+				this.position.y -= speed;
+				// this.tiles.forEach( tile => tile.position.y -= speed );
 				break;
 			case ScrollDirection.DOWN:
-				this.tiles.forEach( tile => tile.position.y += speed );
+				this.position.y += speed;
+				// this.tiles.forEach( tile => tile.position.y += speed );
 				break;
 			case ScrollDirection.LEFT:
-				this.tiles.forEach( tile => tile.position.x -= speed );
+				this.position.x -= speed;
+				// this.tiles.forEach( tile => tile.position.x -= speed );
 				break;
 			case ScrollDirection.RIGHT:
-				this.tiles.forEach( tile => tile.position.x += speed );
+				this.position.x += speed;
+				// this.tiles.forEach( tile => tile.position.x += speed );
 				break;
 		}
 		this.updateTileOverBorder();
@@ -78,16 +82,16 @@ export class PixelField extends View {
 	protected updateTileOverBorder (): void {
 		this.tiles.forEach( tile => {
 			let isUpdate: boolean = false;
-			if ( tile.position.x < this.startPoint.x ) {
+			if ( tile.getGlobalPosition().x < this.startPoint.x ) {
 				tile.position.x += this.scrollUpdateDistance.x;
 				isUpdate = true;
-			} else if ( tile.position.x >= this.endPoint.x ) {
+			} else if ( tile.getGlobalPosition().x >= this.endPoint.x ) {
 				tile.position.x -= this.scrollUpdateDistance.x;
 				isUpdate = true;
-			} else if ( tile.position.y < this.startPoint.y ) {
+			} else if ( tile.getGlobalPosition().y < this.startPoint.y ) {
 				tile.position.y += this.scrollUpdateDistance.y;
 				isUpdate = true;
-			} else if ( tile.position.y >= this.endPoint.y ) {
+			} else if ( tile.getGlobalPosition().y >= this.endPoint.y ) {
 				tile.position.y -= this.scrollUpdateDistance.y;
 				isUpdate = true;
 			}

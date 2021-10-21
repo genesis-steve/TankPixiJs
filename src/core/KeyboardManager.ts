@@ -44,7 +44,7 @@ export class KeyboardManager {
 			keyState.isPress = true;
 		}
 		const data: IKeyboardEventData = {
-			code: e.key
+			code: e.code
 		};
 		this.onKeyDownSignal.dispatch( data );
 	}
