@@ -1,7 +1,7 @@
 import { IBullet } from 'src/components/game/elements/Bullet';
+import { IMaterial } from 'src/components/game/elements/materials/Material';
 import { IPixelField } from 'src/components/game/elements/PixelField';
 import { ITank } from 'src/components/game/elements/Tank';
-import { ISprite } from 'src/elements/Sprite';
 import { IConfig } from 'src/ui/Config';
 
 export class GameConfig implements IGameConfig {
@@ -20,8 +20,19 @@ export class GameConfig implements IGameConfig {
 		name: 'bullet',
 		assetName: 'bullet.png',
 		anchor: { x: 0.5, y: 0.5 },
-		boomAssetName: 'boom.png'
+		boomAssetName: 'boom.png',
+		damage: 10
 	};
+
+	public materials: Array<IMaterial> = [
+		{
+			name: 'Rock',
+			assetName: 'rock.png',
+			dieAssetName: 'rock_die.png',
+			anchor: { x: 0.5, y: 0.5 },
+			hp: 50
+		}
+	];
 
 	protected tileTexture: Array<string> = [
 		'fieldTile1.png',
@@ -33,8 +44,8 @@ export class GameConfig implements IGameConfig {
 		name: 'pixelField',
 		tiles: this.tileTexture,
 		pixelSize: 50,
-		pixelMap: this.getRandomPixelMap( 100, 100 ),
-		positionOnMap: { x: 150, y: 150 }
+		pixelMap: this.getRandomPixelMap( 20, 20 ),
+		playerInitPosition: { x: 150, y: 150 }
 	};
 
 	protected getRandomPixelMap ( pixelX: number, pixelY: number ): Array<Array<string>> {
@@ -54,5 +65,6 @@ export class GameConfig implements IGameConfig {
 export interface IGameConfig extends IConfig {
 	tank: ITank;
 	bullet: IBullet;
+	materials: Array<IMaterial>;
 	pixelField: IPixelField;
 }

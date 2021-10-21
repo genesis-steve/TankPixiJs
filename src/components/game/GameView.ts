@@ -1,3 +1,5 @@
+import { Inject } from 'typescript-ioc';
+import { Tween } from '@tweenjs/tween.js';
 import { IPixelField, PixelField, ScrollDirection } from 'src/components/game/elements/PixelField';
 import { ITank, MoveDirection, RotateDirection, Tank } from 'src/components/game/elements/Tank';
 import { IGameConfig } from 'src/components/game/GameConfig';
@@ -5,20 +7,27 @@ import { View } from 'src/ui/View';
 import { Bullet } from 'src/components/game/elements/Bullet';
 import { IPoint } from 'src/elements/DisplayObject';
 import { AngleDirection } from 'src/config/GeneralInterface';
+import { IMaterial, Material } from 'src/components/game/elements/materials/Material';
+import { Viewport } from 'src/core/Viewport';
 
 export class GameView extends View {
+
+	@Inject
+	protected viewport: Viewport;
 
 	protected config: IGameConfig;
 
 	protected field: PixelField;
 	protected tank: Tank;
 	protected bullets: Array<Bullet>;
+	protected materials: Array<Material>;
 
 	protected init ( config?: IGameConfig ): void {
 		super.init( config );
-		this.createField( this.config.pixelField );
-		this.createTank( this.config.tank );
+		this.createField( config.pixelField );
+		this.createTank( config.tank );
 		this.initBullets();
+		this.createMaterials( config.materials );
 	}
 
 	protected createField ( config: IPixelField ): void {
@@ -33,6 +42,19 @@ export class GameView extends View {
 	protected createTank ( config: ITank ): void {
 		this.tank = new Tank( config );
 		this.addChild( this.tank );
+	}
+
+	protected createMaterials ( materials: Array<IMaterial> ): void {
+		this.materials = new Array<Material>();
+		materials.forEach( config => {
+			const material: Material = new Material( config );
+			material.position.set(
+				Math.floor( Math.random() * this.viewport.width ),
+				Math.floor( Math.random() * this.viewport.height )
+			);
+			this.field.addChild( material );
+			this.materials.push( material );
+		} );
 	}
 
 	public moveTank ( direction: MoveDirection, speed: number ): void {
@@ -59,13 +81,13 @@ export class GameView extends View {
 		const angle: number = ( this.tank.angle + ( direction === MoveDirection.FORWARD ? 0 : 1 ) * 180 ) % 360;
 		switch ( angle ) {
 			case AngleDirection.LEFT:
-				return ScrollDirection.LEFT;
-			case AngleDirection.UP:
-				return ScrollDirection.UP;
-			case AngleDirection.RIGHT:
 				return ScrollDirection.RIGHT;
-			case AngleDirection.DOWN:
+			case AngleDirection.UP:
 				return ScrollDirection.DOWN;
+			case AngleDirection.RIGHT:
+				return ScrollDirection.LEFT;
+			case AngleDirection.DOWN:
+				return ScrollDirection.UP;
 		}
 	}
 
@@ -85,16 +107,16 @@ export class GameView extends View {
 		const posOffset: IPoint = { x: 0, y: 0 };
 		switch ( this.tank.angle ) {
 			case AngleDirection.LEFT:
-				posOffset.x += this.tank.width / 2;
-				break;
-			case AngleDirection.UP:
-				posOffset.y += this.tank.width / 2;
-				break;
-			case AngleDirection.RIGHT:
 				posOffset.x -= this.tank.width / 2;
 				break;
-			case AngleDirection.DOWN:
+			case AngleDirection.UP:
 				posOffset.y -= this.tank.width / 2;
+				break;
+			case AngleDirection.RIGHT:
+				posOffset.x += this.tank.width / 2;
+				break;
+			case AngleDirection.DOWN:
+				posOffset.y += this.tank.width / 2;
 				break;
 		}
 		bullet.position.set(
@@ -102,7 +124,70 @@ export class GameView extends View {
 			this.tank.position.y - this.field.position.y + posOffset.y
 		)
 		bullet.angle = this.tank.angle;
-		bullet.fly( 300, 200 );
+		this.bulletFly( bullet, 300, 200 );
+	}
+
+	public bulletFly ( bullet: Bullet, distance: number, speed: number ): void {
+		const bulletFlyTween: Tween<Bullet> = new Tween( bullet )
+			.to( this.getFlyDestination( bullet, distance ), speed )
+			.onUpdate( () => {
+				for ( let material of this.materials ) {
+					if ( this.checkBulletDamage( bullet, material ) ) {
+						bulletFlyTween.stop();
+						bullet.boom();
+						material.reduceHp( bullet.damage );
+						break;
+					}
+				}
+			} )
+			.onComplete( () => {
+				bullet.boom();
+			} )
+			.start();
+	}
+
+	protected getFlyDestination ( bullet: Bullet, distance: number ): object {
+		switch ( bullet.angle ) {
+			case AngleDirection.LEFT:
+				return { x: bullet.x - distance };
+			case AngleDirection.UP:
+				return { y: bullet.y - distance };
+			case AngleDirection.RIGHT:
+				return { x: bullet.x + distance };
+			case AngleDirection.DOWN:
+				return { y: bullet.y + distance };
+		}
+	}
+
+	protected checkBulletDamage ( bullet: Bullet, material: Material ): boolean {
+		return this.isHitBulletLeft( bullet, material )
+			|| this.isHitBulletRight( bullet, material )
+			|| this.isHitBulletUp( bullet, material )
+			|| this.isHitBulletDown( bullet, material )
+	}
+
+	protected isHitBulletLeft ( bullet: Bullet, material: Material ): boolean {
+		return bullet.position.x - bullet.anchor.x * bullet.width <= material.position.x + material.anchor.x * material.width && this.isSameY( bullet, material ) && bullet.angle === AngleDirection.LEFT;
+	}
+
+	protected isHitBulletRight ( bullet: Bullet, material: Material ): boolean {
+		return bullet.position.x + bullet.anchor.x * bullet.width >= material.position.x - material.anchor.x * material.width && this.isSameY( bullet, material ) && bullet.angle === AngleDirection.RIGHT;
+	}
+
+	protected isHitBulletUp ( bullet: Bullet, material: Material ): boolean {
+		return bullet.position.y - bullet.anchor.y * bullet.height <= material.position.y + material.anchor.y * material.height && this.isSameX( bullet, material ) && bullet.angle === AngleDirection.UP;
+	}
+
+	protected isHitBulletDown ( bullet: Bullet, material: Material ): boolean {
+		return bullet.position.y + bullet.anchor.y * bullet.height >= material.position.y - material.anchor.y * material.height && this.isSameX( bullet, material ) && bullet.angle === AngleDirection.DOWN;
+	}
+
+	protected isSameX ( bullet: Bullet, material: Material ): boolean {
+		return Math.abs( bullet.x - material.x - bullet.width * bullet.anchor.x ) < material.width;
+	}
+
+	protected isSameY ( bullet: Bullet, material: Material ): boolean {
+		return Math.abs( bullet.y - material.y - bullet.height * bullet.anchor.y ) < material.height;
 	}
 
 }
