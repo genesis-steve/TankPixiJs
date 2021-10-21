@@ -7,19 +7,31 @@ export class GamePadManager {
 	protected static readonly SENSE_INTENSITY_STRONG: number = 0.9
 	protected static readonly SENSE_INTENSITY_WEAK: number = 0.3
 
-	public onButtonUpdateSignal: MiniSignal = new MiniSignal();
-	public onAxesUpdateSignal: MiniSignal = new MiniSignal();
+	public onButtonUpdateSignal: MiniSignal;
+	public onAxesUpdateSignal: MiniSignal;
 
-	protected buttonsState: Array<boolean> = new Array<boolean>( 16 );
-	protected axesState: Array<number> = new Array<number>( 4 );
+	protected buttonsState: Array<boolean>;
+	protected axesState: Array<number>;
 
 	constructor () {
+		this.initButtonsState();
+		this.initSignals();
+	}
+
+	protected initButtonsState (): void {
+		this.buttonsState = new Array<boolean>( 16 );
 		for ( let i: number = 0; i < this.buttonsState.length; i++ ) {
 			this.buttonsState[ i ] = false;
 		}
+		this.axesState = new Array<number>( 4 );
 		for ( let i: number = 0; i < this.axesState.length; i++ ) {
 			this.axesState[ i ] = 0;
 		}
+	}
+
+	protected initSignals (): void {
+		this.onButtonUpdateSignal = new MiniSignal()
+		this.onAxesUpdateSignal = new MiniSignal()
 	}
 
 	public updateGamePad ( gamepad: Gamepad ): void {

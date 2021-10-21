@@ -1,5 +1,7 @@
+import { IBullet } from 'src/components/game/elements/Bullet';
 import { IPixelField } from 'src/components/game/elements/PixelField';
 import { ITank } from 'src/components/game/elements/Tank';
+import { ISprite } from 'src/elements/Sprite';
 import { IConfig } from 'src/ui/Config';
 
 export class GameConfig implements IGameConfig {
@@ -12,6 +14,13 @@ export class GameConfig implements IGameConfig {
 		anchor: { x: 0.5, y: 0.5 },
 		assetName: 'tank.png',
 		moveSpeeds: [ 5, 10 ]
+	};
+
+	public bullet: IBullet = {
+		name: 'bullet',
+		assetName: 'bullet.png',
+		anchor: { x: 0.5, y: 0.5 },
+		boomAssetName: 'boom.png'
 	};
 
 	public pixelField: IPixelField = {
@@ -28,5 +37,6 @@ export class GameConfig implements IGameConfig {
 
 export interface IGameConfig extends IConfig {
 	tank: ITank;
+	bullet: IBullet;
 	pixelField: IPixelField;
 }

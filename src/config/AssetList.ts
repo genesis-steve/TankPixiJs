@@ -4,6 +4,14 @@ export const list: Array<IAsset> = [
 		assetUrl: 'assets/tank.png'
 	},
 	{
+		assetKey: 'bullet.png',
+		assetUrl: 'assets/bullet.png'
+	},
+	{
+		assetKey: 'boom.png',
+		assetUrl: 'assets/boom.png'
+	},
+	{
 		assetKey: 'fieldTile1.png',
 		assetUrl: 'assets/fieldTile1.png'
 	},
