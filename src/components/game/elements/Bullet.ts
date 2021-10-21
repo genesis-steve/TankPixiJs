@@ -11,15 +11,15 @@ export class Bullet extends Sprite {
 		return this._isVanish;
 	}
 
+	public set isVanish ( value: boolean ) {
+		this._isVanish = value;
+		this.visible = !value;
+	}
+
 	protected _damage: number;
 
 	public get damage (): number {
 		return this._damage;
-	}
-
-	public set isVanish ( value: boolean ) {
-		this._isVanish = value;
-		this.visible = !value;
 	}
 
 	protected init ( config: IBullet ) {

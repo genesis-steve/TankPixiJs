@@ -8,6 +8,12 @@ export class Material extends Sprite {
 	protected maxHp: number;
 	protected hp: number;
 
+	protected _isVanish: boolean = false;
+
+	public get isVanish (): boolean {
+		return this._isVanish;
+	}
+
 	protected init ( config: IMaterial ) {
 		super.init( config );
 		this.maxHp = this.config.hp;
@@ -25,6 +31,9 @@ export class Material extends Sprite {
 		this.texture = PIXI.utils.TextureCache[ this.config.dieAssetName ];
 		new Tween( this )
 			.to( { alpha: 0 }, 1000 )
+			.onComplete( () => {
+				this._isVanish = true;
+			} )
 			.start();
 	}
 

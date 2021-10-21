@@ -132,6 +132,9 @@ export class GameView extends View {
 			.to( this.getFlyDestination( bullet, distance ), speed )
 			.onUpdate( () => {
 				for ( let material of this.materials ) {
+					if ( material.isVanish ) {
+						continue;
+					}
 					if ( this.checkBulletDamage( bullet, material ) ) {
 						bulletFlyTween.stop();
 						bullet.boom();
