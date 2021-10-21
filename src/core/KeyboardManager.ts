@@ -40,6 +40,9 @@ export class KeyboardManager {
 				isTouch: true
 			} );
 		} else {
+			if ( keyState.isPress ) {
+				return;
+			}
 			keyState.isTouch = !keyState.isPress;
 			keyState.isPress = true;
 		}
