@@ -4,6 +4,7 @@ import { Viewport } from 'src/core/Viewport';
 import { IDisplayObject, IPoint } from 'src/elements/DisplayObject';
 import { ISprite, Sprite } from 'src/elements/Sprite';
 import { View } from 'src/ui/View';
+import { IMaterial, Material } from 'src/components/game/elements/materials/Material';
 
 export class PixelField extends View {
 
@@ -54,8 +55,8 @@ export class PixelField extends View {
 			} );
 		} )
 		this.position.set(
-			this.viewport.width / 2 - this.config.positionOnMap.x,
-			this.viewport.height / 2 - this.config.positionOnMap.y
+			this.viewport.width / 2 - this.config.playerInitPosition.x,
+			this.viewport.height / 2 - this.config.playerInitPosition.y
 		);
 	}
 
@@ -96,7 +97,7 @@ export class PixelField extends View {
 }
 
 export interface IPixelField extends IDisplayObject {
-	positionOnMap: IPoint;
+	playerInitPosition: IPoint;
 	tiles: Array<string>;
 	pixelSize: number;
 	pixelMap: Array<Array<string>>;

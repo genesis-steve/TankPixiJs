@@ -12,6 +12,14 @@ export const list: Array<IAsset> = [
 		assetUrl: 'assets/boom.png'
 	},
 	{
+		assetKey: 'rock.png',
+		assetUrl: 'assets/rock.png'
+	},
+	{
+		assetKey: 'rock_die.png',
+		assetUrl: 'assets/rock_die.png'
+	},
+	{
 		assetKey: 'fieldTile1.png',
 		assetUrl: 'assets/fieldTile1.png'
 	},
