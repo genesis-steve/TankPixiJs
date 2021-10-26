@@ -1,19 +1,16 @@
-import { Inject } from 'typescript-ioc';
 import { Tween } from '@tweenjs/tween.js';
 import { IPixelField, PixelField, ScrollDirection } from 'src/components/game/elements/PixelField';
 import { ITank, MoveDirection, Tank } from 'src/components/game/elements/Tank';
-import { IGameConfig } from 'src/components/game/GameConfig';
+import { IGameConfig, IMaterialSettings } from 'src/components/game/GameConfig';
 import { View } from 'src/ui/View';
 import { Bullet } from 'src/components/game/elements/Bullet';
 import { IPoint } from 'src/elements/DisplayObject';
 import { AngleDirection } from 'src/config/GeneralInterface';
-import { IMaterial, Material } from 'src/components/game/elements/materials/Material';
-import { Viewport } from 'src/core/Viewport';
+import { Material } from 'src/components/game/elements/materials/Material';
+import { CollisionSystem } from 'src/core/CollisionSystem';
+import { Helper } from 'src/utils/Helper';
 
 export class GameView extends View {
-
-	@Inject
-	protected viewport: Viewport;
 
 	protected config: IGameConfig;
 
@@ -21,13 +18,15 @@ export class GameView extends View {
 	protected tank: Tank;
 	protected bullets: Array<Bullet>;
 	protected materials: Array<Material>;
+	protected emptyOnMap: Array<number>;
 
 	protected init ( config?: IGameConfig ): void {
 		super.init( config );
+		this.initBullets();
+		this.initEmptyOnMap();
 		this.createField( config.pixelField );
 		this.createTank( config.tank );
-		this.initBullets();
-		this.createMaterials( config.materials );
+		this.createMaterials( config.material );
 	}
 
 	protected createField ( config: IPixelField ): void {
@@ -44,16 +43,38 @@ export class GameView extends View {
 		this.addChild( this.tank );
 	}
 
-	protected createMaterials ( materials: Array<IMaterial> ): void {
+	protected initEmptyOnMap (): void {
+		const rowLength: number = this.config.pixelField.pixelMap[ 0 ].length;
+		const columnLength: number = this.config.pixelField.pixelMap.length;
+		this.emptyOnMap = new Array<number>();
+		for ( let i: number = 0; i < rowLength * columnLength; i++ ) {
+			this.emptyOnMap.push( i );
+		}
+	}
+
+	protected createMaterials ( config: IMaterialSettings ): void {
 		this.materials = new Array<Material>();
-		materials.forEach( config => {
-			const material: Material = new Material( config );
-			material.position.set(
-				Math.floor( Math.random() * this.viewport.width ),
-				Math.floor( Math.random() * this.viewport.height )
-			);
-			this.field.addChild( material );
-			this.materials.push( material );
+		const rowLength: number = this.config.pixelField.pixelMap[ 0 ].length;
+		const pixelSize: number = this.config.pixelField.pixelSize;
+		config.sprites.forEach( spriteConfig => {
+			const amount: number = config.amountOfMaterial.get( spriteConfig.name );
+			for ( let i: number = 0; i < amount; i++ ) {
+				if ( this.emptyOnMap.length === 0 ) {
+					break;
+				}
+				const material: Material = new Material( spriteConfig );
+				const randomIndex: number = Helper.randomInt( 0, this.emptyOnMap.length );
+				const positionIndex: number = this.emptyOnMap[ randomIndex ];
+				this.emptyOnMap.splice( randomIndex );
+				const rowIndex: number = Math.floor( positionIndex / rowLength );
+				const columnIndex: number = positionIndex % rowLength;
+				material.position.set(
+					rowIndex * pixelSize + spriteConfig.anchor.x * pixelSize,
+					columnIndex * pixelSize + spriteConfig.anchor.y * pixelSize
+				);
+				this.field.addChild( material );
+				this.materials.push( material );
+			}
 		} );
 	}
 
@@ -136,7 +157,7 @@ export class GameView extends View {
 					if ( material.isVanish ) {
 						continue;
 					}
-					if ( this.checkBulletDamage( bullet, material ) ) {
+					if ( CollisionSystem.isCollide( bullet, material ) ) {
 						bulletFlyTween.stop();
 						bullet.boom();
 						material.reduceHp( bullet.damage );
@@ -161,37 +182,6 @@ export class GameView extends View {
 			case AngleDirection.DOWN:
 				return { y: bullet.y + distance };
 		}
-	}
-
-	protected checkBulletDamage ( bullet: Bullet, material: Material ): boolean {
-		return this.isHitBulletLeft( bullet, material )
-			|| this.isHitBulletRight( bullet, material )
-			|| this.isHitBulletUp( bullet, material )
-			|| this.isHitBulletDown( bullet, material )
-	}
-
-	protected isHitBulletLeft ( bullet: Bullet, material: Material ): boolean {
-		return bullet.position.x - bullet.anchor.x * bullet.width <= material.position.x + material.anchor.x * material.width && this.isSameY( bullet, material ) && bullet.angle === AngleDirection.LEFT;
-	}
-
-	protected isHitBulletRight ( bullet: Bullet, material: Material ): boolean {
-		return bullet.position.x + bullet.anchor.x * bullet.width >= material.position.x - material.anchor.x * material.width && this.isSameY( bullet, material ) && bullet.angle === AngleDirection.RIGHT;
-	}
-
-	protected isHitBulletUp ( bullet: Bullet, material: Material ): boolean {
-		return bullet.position.y - bullet.anchor.y * bullet.height <= material.position.y + material.anchor.y * material.height && this.isSameX( bullet, material ) && bullet.angle === AngleDirection.UP;
-	}
-
-	protected isHitBulletDown ( bullet: Bullet, material: Material ): boolean {
-		return bullet.position.y + bullet.anchor.y * bullet.height >= material.position.y - material.anchor.y * material.height && this.isSameX( bullet, material ) && bullet.angle === AngleDirection.DOWN;
-	}
-
-	protected isSameX ( bullet: Bullet, material: Material ): boolean {
-		return Math.abs( bullet.x - material.x - bullet.width * bullet.anchor.x ) < material.width;
-	}
-
-	protected isSameY ( bullet: Bullet, material: Material ): boolean {
-		return Math.abs( bullet.y - material.y - bullet.height * bullet.anchor.y ) < material.height;
 	}
 
 }

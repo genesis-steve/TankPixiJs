@@ -3,6 +3,7 @@ import { IMaterial } from 'src/components/game/elements/materials/Material';
 import { IPixelField } from 'src/components/game/elements/PixelField';
 import { ITank } from 'src/components/game/elements/Tank';
 import { IConfig } from 'src/ui/Config';
+import { TSMap } from 'typescript-map';
 
 export class GameConfig implements IGameConfig {
 
@@ -24,15 +25,20 @@ export class GameConfig implements IGameConfig {
 		damage: 10
 	};
 
-	public materials: Array<IMaterial> = [
-		{
-			name: 'Rock',
-			assetName: 'rock.png',
-			dieAssetName: 'rock_die.png',
-			anchor: { x: 0.5, y: 0.5 },
-			hp: 50
-		}
-	];
+	public material: IMaterialSettings = {
+		sprites: [
+			{
+				name: MaterialType.WALL,
+				assetName: 'wall.png',
+				dieAssetName: 'wall_die.png',
+				anchor: { x: 0.5, y: 0.5 },
+				hp: 50
+			}
+		],
+		amountOfMaterial: new TSMap<string, number>( [
+			[ MaterialType.WALL, 10 ]
+		] )
+	};
 
 	protected tileTexture: Array<string> = [
 		'fieldTile1.png',
@@ -65,6 +71,15 @@ export class GameConfig implements IGameConfig {
 export interface IGameConfig extends IConfig {
 	tank: ITank;
 	bullet: IBullet;
-	materials: Array<IMaterial>;
+	material: IMaterialSettings;
 	pixelField: IPixelField;
+}
+
+export interface IMaterialSettings {
+	sprites: Array<IMaterial>;
+	amountOfMaterial: TSMap<string, number>;
+}
+
+export enum MaterialType {
+	WALL = 'Wall'
 }
