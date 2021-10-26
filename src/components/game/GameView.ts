@@ -1,7 +1,7 @@
 import { Inject } from 'typescript-ioc';
 import { Tween } from '@tweenjs/tween.js';
 import { IPixelField, PixelField, ScrollDirection } from 'src/components/game/elements/PixelField';
-import { ITank, MoveDirection, RotateDirection, Tank } from 'src/components/game/elements/Tank';
+import { ITank, MoveDirection, Tank } from 'src/components/game/elements/Tank';
 import { IGameConfig } from 'src/components/game/GameConfig';
 import { View } from 'src/ui/View';
 import { Bullet } from 'src/components/game/elements/Bullet';
@@ -58,10 +58,12 @@ export class GameView extends View {
 	}
 
 	public moveTank ( direction: MoveDirection, speed: number ): void {
-		const scrollDirection: ScrollDirection = this.getFieldScrollDirection( direction );
+		const angle: number = this.getTankAngleDirection( direction );
+		const scrollDirection: ScrollDirection = this.getFieldScrollDirection( angle );
 		if ( this.isTankMovable( scrollDirection ) ) {
 			this.field.scroll( scrollDirection, speed );
 		}
+		this.tank.angle = angle;
 	}
 
 	protected isTankMovable ( direction: ScrollDirection ): boolean {
@@ -77,8 +79,11 @@ export class GameView extends View {
 		}
 	}
 
-	protected getFieldScrollDirection ( direction: MoveDirection ): ScrollDirection {
-		const angle: number = ( this.tank.angle + ( direction === MoveDirection.FORWARD ? 0 : 1 ) * 180 ) % 360;
+	protected getTankAngleDirection ( direction: MoveDirection ): AngleDirection {
+		return ( direction * 90 ) % 360;
+	}
+
+	protected getFieldScrollDirection ( angle: number ): ScrollDirection {
 		switch ( angle ) {
 			case AngleDirection.LEFT:
 				return ScrollDirection.RIGHT;
@@ -89,10 +94,6 @@ export class GameView extends View {
 			case AngleDirection.DOWN:
 				return ScrollDirection.UP;
 		}
-	}
-
-	public rotateTank ( direction: RotateDirection ): void {
-		this.tank.rotate( direction );
 	}
 
 	public shoot (): void {

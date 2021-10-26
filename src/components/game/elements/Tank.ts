@@ -4,12 +4,6 @@ export class Tank extends Sprite {
 
 	protected config: ITank;
 
-	public rotate ( direction: RotateDirection ): void {
-		const offset: number = ( ( direction === RotateDirection.LEFT ) ? -1 : 1 );
-		const angle: number = offset * 90;
-		this.angle = ( this.angle + angle + 360 ) % 360;
-	}
-
 }
 
 export interface ITank extends ISprite {
@@ -17,11 +11,8 @@ export interface ITank extends ISprite {
 }
 
 export enum MoveDirection {
-	FORWARD,
-	BACKWARD
-}
-
-export enum RotateDirection {
-	LEFT,
-	RIGHT
+	RIGHT = 0,
+	DOWN = 1,
+	LEFT = 2,
+	UP = 3
 }
