@@ -40,33 +40,33 @@ export class GamePadManager {
 	}
 
 	protected updateButton ( gamepad: Gamepad ): void {
-		const buttonsUpdateState: Array<IGamePadButtonState> = new Array<IGamePadButtonState>();
+		const buttons: Array<IGamePadButtonState> = new Array<IGamePadButtonState>();
 		const buttonKeys = Object.values( GamePadButtonKey );
 		this.buttonsState.forEach( ( state, i ) => {
-			buttonsUpdateState.push( {
+			buttons.push( {
 				key: buttonKeys[ i ],
 				isPress: gamepad.buttons[ i ].pressed,
 				isTouch: gamepad.buttons[ i ].pressed && !state
 			} )
 			this.buttonsState[ i ] = gamepad.buttons[ i ].pressed;
 		} );
-		const data: IGamePadButtonEventData = { buttonsUpdateState };
+		const data: IGamePadButtonEventData = { buttons };
 		this.onButtonUpdateSignal.dispatch( data );
 	}
 
 	protected updateAxes ( gamepad: Gamepad ): void {
-		const axesUpdateState: Array<IGamePadAxesState> = new Array<IGamePadAxesState>();
+		const axes: Array<IGamePadAxesState> = new Array<IGamePadAxesState>();
 		const axesKeys = Object.values( GamePadAxesKey );
 		this.axesState.forEach( ( intensity, i ) => {
 			if ( this.isAxesStrongInput( gamepad.axes[ i ] ) ) {
-				axesUpdateState.push( {
+				axes.push( {
 					key: axesKeys[ i ],
 					isPositive: gamepad.axes[ i ] > 0,
 					intensity: GamePadAxesIntensity.STRONG,
 					isTouch: intensity < GamePadManager.SENSE_INTENSITY_WEAK && intensity > -GamePadManager.SENSE_INTENSITY_WEAK
 				} )
 			} else if ( this.isAxesWeakInput( gamepad.axes[ i ] ) ) {
-				axesUpdateState.push( {
+				axes.push( {
 					key: axesKeys[ i ],
 					isPositive: gamepad.axes[ i ] > 0,
 					intensity: GamePadAxesIntensity.WEAK,
@@ -75,10 +75,10 @@ export class GamePadManager {
 			}
 			this.axesState[ i ] = gamepad.axes[ i ];
 		} );
-		if ( axesUpdateState.length === 0 ) {
+		if ( axes.length === 0 ) {
 			return;
 		}
-		const data: IGamePadAxesEventData = { axesUpdateState };
+		const data: IGamePadAxesEventData = { axes };
 		this.onAxesUpdateSignal.dispatch( data );
 	}
 
@@ -92,11 +92,11 @@ export class GamePadManager {
 }
 
 export interface IGamePadButtonEventData {
-	buttonsUpdateState: Array<IGamePadButtonState>;
+	buttons: Array<IGamePadButtonState>;
 }
 
 export interface IGamePadAxesEventData {
-	axesUpdateState: Array<IGamePadAxesState>;
+	axes: Array<IGamePadAxesState>;
 }
 
 export interface IGamePadButtonState {

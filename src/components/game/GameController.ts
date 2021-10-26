@@ -1,6 +1,6 @@
 import { Inject } from 'typescript-ioc';
 import { GameView } from 'src/components/game/GameView';
-import { IKeyboardEventData, KeyboardButton, KeyboardManager } from 'src/core/KeyboardManager';
+import { IKeyboardDownEventData, IKeyboardPressEventData, KeyboardButton, KeyboardManager } from 'src/core/KeyboardManager';
 import { Controller } from 'src/ui/Controller';
 import { GameConfig, IGameConfig } from 'src/components/game/GameConfig';
 import { MoveDirection } from 'src/components/game/elements/Tank';
@@ -31,7 +31,7 @@ export class GameController extends Controller {
 		this.gamePadManager.onAxesUpdateSignal.add( this.onGamePadAxesUpdate, this );
 	}
 
-	protected onKeyDown ( data: IKeyboardEventData ): void {
+	protected onKeyDown ( data: IKeyboardDownEventData ): void {
 		switch ( data.code ) {
 			case KeyboardButton.SPACE:
 				this.view.shoot();
@@ -39,29 +39,31 @@ export class GameController extends Controller {
 		}
 	}
 
-	protected onKeyUp ( data: IKeyboardEventData ): void {
+	protected onKeyUp ( data: IKeyboardDownEventData ): void {
 		//
 	}
 
-	protected onKeyPress ( data: IKeyboardEventData ): void {
-		switch ( data.code ) {
-			case KeyboardButton.ARROW_UP:
+	protected onKeyPress ( data: IKeyboardPressEventData ): void {
+		for ( let i: number = 0; i < data.buttons.length; i++ ) {
+			const code: string = data.buttons[ i ].code;
+			if ( code === KeyboardButton.ARROW_UP ) {
 				this.view.moveTank( MoveDirection.UP, this.config.tank.moveSpeeds[ 1 ] );
 				break;
-			case KeyboardButton.ARROW_DOWN:
+			} else if ( code === KeyboardButton.ARROW_DOWN ) {
 				this.view.moveTank( MoveDirection.DOWN, this.config.tank.moveSpeeds[ 1 ] );
 				break;
-			case KeyboardButton.ARROW_LEFT:
+			} else if ( code === KeyboardButton.ARROW_LEFT ) {
 				this.view.moveTank( MoveDirection.LEFT, this.config.tank.moveSpeeds[ 1 ] );
 				break;
-			case KeyboardButton.ARROW_RIGHT:
+			} else if ( code === KeyboardButton.ARROW_RIGHT ) {
 				this.view.moveTank( MoveDirection.RIGHT, this.config.tank.moveSpeeds[ 1 ] );
 				break;
+			}
 		}
 	}
 
 	protected onGamePadButtonUpdate ( data: IGamePadButtonEventData ): void {
-		data.buttonsUpdateState.forEach( button => {
+		data.buttons.forEach( button => {
 			switch ( button.key ) {
 				case GamePadButtonKey.PAD_UP:
 					if ( button.isPress ) {
@@ -95,7 +97,7 @@ export class GameController extends Controller {
 	protected onGamePadAxesUpdate ( data: IGamePadAxesEventData ): void {
 		let speedIndex: number;
 		let speed: number;
-		data.axesUpdateState.forEach( axes => {
+		data.axes.forEach( axes => {
 			switch ( axes.key ) {
 				case GamePadAxesKey.AXES_LX:
 					speedIndex = axes.intensity === GamePadAxesIntensity.WEAK ? 0 : 1;

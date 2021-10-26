@@ -46,7 +46,7 @@ export class KeyboardManager {
 			keyState.isTouch = !keyState.isPress;
 			keyState.isPress = true;
 		}
-		const data: IKeyboardEventData = {
+		const data: IKeyboardDownEventData = {
 			code: e.code
 		};
 		this.onKeyDownSignal.dispatch( data );
@@ -59,21 +59,22 @@ export class KeyboardManager {
 		}
 		keyState.isTouch = false;
 		keyState.isPress = false;
-		const data: IKeyboardEventData = {
+		const data: IKeyboardDownEventData = {
 			code: e.key
 		};
 		this.onKeyUpSignal.dispatch( data );
 	}
 
 	public updateKeyboard (): void {
+		const buttons: Array<IKeyboardButtonState> = new Array<IKeyboardButtonState>();
 		this.keysState.forEach( state => {
 			if ( state.isPress ) {
-				const data: IKeyboardEventData = {
-					code: state.code
-				};
-				this.onKeyPressSignal.dispatch( data );
+				buttons.push( state );
 			}
 		} );
+		if ( buttons.length > 0 ) {
+			this.onKeyPressSignal.dispatch( { buttons } );
+		}
 	}
 
 }
@@ -84,7 +85,11 @@ export interface IKeyboardButtonState {
 	isTouch: boolean;
 }
 
-export interface IKeyboardEventData {
+export interface IKeyboardPressEventData {
+	buttons: Array<IKeyboardButtonState>;
+}
+
+export interface IKeyboardDownEventData {
 	code: string;
 }
 
