@@ -1,8 +1,15 @@
+import { AngleDirection } from "src/config/GeneralInterface";
 import { IDisplayObject } from "src/elements/DisplayObject";
+import { TSMap } from "typescript-map";
 
 export class Sprite extends PIXI.Sprite {
 
 	protected config: ISprite;
+
+	protected _direction: number = 0;
+	public get direction (): number {
+		return this._direction;
+	}
 
 	constructor ( config: ISprite ) {
 		super();
@@ -27,8 +34,16 @@ export class Sprite extends PIXI.Sprite {
 		}
 	}
 
+	public setDirection ( value: number ): void {
+		this._direction = value;
+		if ( this.config.assetNameMap && this.config.assetNameMap.size() > 0 ) {
+			this.texture = PIXI.utils.TextureCache[ this.config.assetNameMap.get( value ) ];
+		}
+	}
+
 }
 
 export interface ISprite extends IDisplayObject {
 	assetName?: string;
+	assetNameMap?: TSMap<AngleDirection, string>;
 }

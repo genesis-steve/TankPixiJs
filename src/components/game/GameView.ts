@@ -7,7 +7,7 @@ import { Bullet } from 'src/components/game/elements/Bullet';
 import { IPoint } from 'src/elements/DisplayObject';
 import { AngleDirection } from 'src/config/GeneralInterface';
 import { Material } from 'src/components/game/elements/materials/Material';
-import { CollisionSystem } from 'src/core/CollisionSystem';
+import { CollisionDirection, CollisionSystem } from 'src/core/CollisionSystem';
 import { Helper } from 'src/utils/Helper';
 
 export class GameView extends View {
@@ -65,7 +65,7 @@ export class GameView extends View {
 				const material: Material = new Material( spriteConfig );
 				const randomIndex: number = Helper.randomInt( 0, this.emptyOnMap.length );
 				const positionIndex: number = this.emptyOnMap[ randomIndex ];
-				this.emptyOnMap.splice( randomIndex );
+				this.emptyOnMap.splice( randomIndex, 1 );
 				const rowIndex: number = Math.floor( positionIndex / rowLength );
 				const columnIndex: number = positionIndex % rowLength;
 				material.position.set(
@@ -80,24 +80,55 @@ export class GameView extends View {
 
 	public moveTank ( direction: MoveDirection, speed: number ): void {
 		const angle: number = this.getTankAngleDirection( direction );
-		const scrollDirection: ScrollDirection = this.getFieldScrollDirection( this.tank.angle );
+		const scrollDirection: ScrollDirection = this.getFieldScrollDirection( this.tank.direction );
 		if ( this.isTankMovable( scrollDirection ) ) {
 			this.field.scroll( scrollDirection, speed );
 		}
-		this.tank.angle = angle;
+		this.tank.setDirection( angle );
 	}
 
 	protected isTankMovable ( direction: ScrollDirection ): boolean {
+		let screenScroll: boolean = false;
 		switch ( direction ) {
 			case ScrollDirection.LEFT:
-				return this.field.position.x + this.field.realWidth > this.tank.position.x + this.tank.width / 2;
+				screenScroll = this.field.position.x + this.field.realWidth > this.tank.position.x + this.tank.width / 2;
+				break;
 			case ScrollDirection.UP:
-				return this.field.position.y + this.field.realHeight > this.tank.position.y + this.tank.height / 2;
+				screenScroll = this.field.position.y + this.field.realHeight > this.tank.position.y + this.tank.height / 2;
+				break;
 			case ScrollDirection.RIGHT:
-				return this.field.position.x < this.tank.position.x - this.tank.width / 2;
+				screenScroll = this.field.position.x < this.tank.position.x - this.tank.width / 2;
+				break;
 			case ScrollDirection.DOWN:
-				return this.field.position.y < this.tank.position.y - this.tank.height / 2;
+				screenScroll = this.field.position.y < this.tank.position.y - this.tank.height / 2;
+				break;
 		}
+		return screenScroll && !this.isTankCollideMaterial( direction );
+	}
+
+	protected isTankCollideMaterial ( direction: ScrollDirection ): boolean {
+		let collosionDirection: CollisionDirection;
+		switch ( direction ) {
+			case ScrollDirection.UP:
+				collosionDirection = CollisionDirection.UP;
+				break;
+			case ScrollDirection.DOWN:
+				collosionDirection = CollisionDirection.DOWN;
+				break;
+			case ScrollDirection.LEFT:
+				collosionDirection = CollisionDirection.LEFT;
+				break;
+			case ScrollDirection.RIGHT:
+				collosionDirection = CollisionDirection.RIGHT;
+				break;
+		}
+		let isCollide: boolean = false;
+		for ( let material of this.materials ) {
+			if ( CollisionSystem.isCollide( this.tank, material, collosionDirection ) && !material.isVanish ) {
+				isCollide = true;
+			}
+		}
+		return isCollide;
 	}
 
 	protected getTankAngleDirection ( direction: MoveDirection ): AngleDirection {
@@ -127,25 +158,25 @@ export class GameView extends View {
 			bullet.isVanish = false;
 		}
 		const posOffset: IPoint = { x: 0, y: 0 };
-		switch ( this.tank.angle ) {
+		switch ( this.tank.direction ) {
 			case AngleDirection.LEFT:
 				posOffset.x -= this.tank.width / 2;
 				break;
 			case AngleDirection.UP:
-				posOffset.y -= this.tank.width / 2;
+				posOffset.y -= this.tank.height / 2;
 				break;
 			case AngleDirection.RIGHT:
 				posOffset.x += this.tank.width / 2;
 				break;
 			case AngleDirection.DOWN:
-				posOffset.y += this.tank.width / 2;
+				posOffset.y += this.tank.height / 2;
 				break;
 		}
 		bullet.position.set(
 			this.tank.position.x - this.field.position.x + posOffset.x,
 			this.tank.position.y - this.field.position.y + posOffset.y
 		)
-		bullet.angle = this.tank.angle;
+		bullet.setDirection( this.tank.direction );
 		this.bulletFly( bullet, 300, 200 );
 	}
 
@@ -172,7 +203,7 @@ export class GameView extends View {
 	}
 
 	protected getFlyDestination ( bullet: Bullet, distance: number ): object {
-		switch ( bullet.angle ) {
+		switch ( bullet.direction ) {
 			case AngleDirection.LEFT:
 				return { x: bullet.x - distance };
 			case AngleDirection.UP:

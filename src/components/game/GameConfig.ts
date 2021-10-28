@@ -2,6 +2,7 @@ import { IBullet } from 'src/components/game/elements/Bullet';
 import { IMaterial } from 'src/components/game/elements/materials/Material';
 import { IPixelField } from 'src/components/game/elements/PixelField';
 import { ITank } from 'src/components/game/elements/Tank';
+import { AngleDirection } from 'src/config/GeneralInterface';
 import { IConfig } from 'src/ui/Config';
 import { TSMap } from 'typescript-map';
 
@@ -13,8 +14,14 @@ export class GameConfig implements IGameConfig {
 		name: 'tank',
 		position: { x: 640, y: 360 },
 		anchor: { x: 0.5, y: 0.5 },
-		assetName: 'tank.png',
-		moveSpeeds: [ 5, 10 ]
+		assetName: 'tank_right.png',
+		moveSpeeds: [ 5, 10 ],
+		assetNameMap: new TSMap<AngleDirection, string>( [
+			[ AngleDirection.UP, 'tank_up.png' ],
+			[ AngleDirection.DOWN, 'tank_down.png' ],
+			[ AngleDirection.LEFT, 'tank_left.png' ],
+			[ AngleDirection.RIGHT, 'tank_right.png' ]
+		] )
 	};
 
 	public bullet: IBullet = {
@@ -22,6 +29,12 @@ export class GameConfig implements IGameConfig {
 		assetName: 'bullet.png',
 		anchor: { x: 0.5, y: 0.5 },
 		boomAssetName: 'boom.png',
+		assetNameMap: new TSMap<AngleDirection, string>( [
+			[ AngleDirection.UP, 'bullet_up.png' ],
+			[ AngleDirection.DOWN, 'bullet_down.png' ],
+			[ AngleDirection.LEFT, 'bullet_left.png' ],
+			[ AngleDirection.RIGHT, 'bullet_right.png' ]
+		] ),
 		damage: 10
 	};
 

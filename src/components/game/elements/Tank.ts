@@ -1,4 +1,6 @@
+import { AngleDirection } from 'src/config/GeneralInterface';
 import { ISprite, Sprite } from 'src/elements/Sprite';
+import { TSMap } from 'typescript-map';
 
 export class Tank extends Sprite {
 
