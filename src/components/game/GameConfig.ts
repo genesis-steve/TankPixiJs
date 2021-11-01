@@ -3,6 +3,7 @@ import { IMaterial } from 'src/components/game/elements/materials/Material';
 import { IPixelField } from 'src/components/game/elements/PixelField';
 import { ITank } from 'src/components/game/elements/Tank';
 import { AngleDirection } from 'src/config/GeneralInterface';
+import { ISprite } from 'src/elements/Sprite';
 import { IConfig } from 'src/ui/Config';
 import { TSMap } from 'typescript-map';
 
@@ -15,7 +16,7 @@ export class GameConfig implements IGameConfig {
 		position: { x: 640, y: 360 },
 		anchor: { x: 0.5, y: 0.5 },
 		assetName: 'tank_right.png',
-		moveSpeeds: [ 5, 10 ],
+		moveSpeeds: [ 2.5, 5 ],
 		assetNameMap: new TSMap<AngleDirection, string>( [
 			[ AngleDirection.UP, 'tank_up.png' ],
 			[ AngleDirection.DOWN, 'tank_down.png' ],
@@ -28,7 +29,6 @@ export class GameConfig implements IGameConfig {
 		name: 'bullet',
 		assetName: 'bullet.png',
 		anchor: { x: 0.5, y: 0.5 },
-		boomAssetName: 'boom.png',
 		assetNameMap: new TSMap<AngleDirection, string>( [
 			[ AngleDirection.UP, 'bullet_up.png' ],
 			[ AngleDirection.DOWN, 'bullet_down.png' ],
@@ -37,6 +37,12 @@ export class GameConfig implements IGameConfig {
 		] ),
 		damage: 10
 	};
+
+	public boom: ISprite = {
+		name: 'boom',
+		anchor: { x: 0.5, y: 0.5 },
+		assetName: 'boom.png'
+	}
 
 	public material: IMaterialSettings = {
 		sprites: [
@@ -84,6 +90,7 @@ export class GameConfig implements IGameConfig {
 export interface IGameConfig extends IConfig {
 	tank: ITank;
 	bullet: IBullet;
+	boom: ISprite;
 	material: IMaterialSettings;
 	pixelField: IPixelField;
 }

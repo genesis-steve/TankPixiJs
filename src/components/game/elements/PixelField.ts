@@ -2,9 +2,8 @@
 import { Inject } from 'typescript-ioc';
 import { Viewport } from 'src/core/Viewport';
 import { IDisplayObject, IPoint } from 'src/elements/DisplayObject';
-import { ISprite, Sprite } from 'src/elements/Sprite';
+import { Sprite } from 'src/elements/Sprite';
 import { View } from 'src/ui/View';
-import { IMaterial, Material } from 'src/components/game/elements/materials/Material';
 
 export class PixelField extends View {
 
@@ -64,19 +63,15 @@ export class PixelField extends View {
 		switch ( direction ) {
 			case ScrollDirection.UP:
 				this.position.y -= speed;
-				// this.tiles.forEach( tile => tile.position.y -= speed );
 				break;
 			case ScrollDirection.DOWN:
 				this.position.y += speed;
-				// this.tiles.forEach( tile => tile.position.y += speed );
 				break;
 			case ScrollDirection.LEFT:
 				this.position.x -= speed;
-				// this.tiles.forEach( tile => tile.position.x -= speed );
 				break;
 			case ScrollDirection.RIGHT:
 				this.position.x += speed;
-				// this.tiles.forEach( tile => tile.position.x += speed );
 				break;
 		}
 		this.updateTileVisible();

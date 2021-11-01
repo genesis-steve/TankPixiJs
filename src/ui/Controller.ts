@@ -1,7 +1,7 @@
 import { Config, IConfig } from 'src/ui/Config';
 import { View } from 'src/ui/View';
 
-export class Controller {
+export class Controller implements IController {
 
 	protected config: IConfig;
 	protected view: View;
@@ -18,4 +18,12 @@ export class Controller {
 		this.config = new Config();
 		this.view = new View( this.config );
 	}
+
+	public updateFrame (): void {
+		//
+	}
+}
+
+export interface IController {
+	updateFrame: () => void;
 }

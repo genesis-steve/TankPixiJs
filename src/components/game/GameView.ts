@@ -9,6 +9,7 @@ import { AngleDirection } from 'src/config/GeneralInterface';
 import { Material } from 'src/components/game/elements/materials/Material';
 import { CollisionDirection, CollisionSystem } from 'src/core/CollisionSystem';
 import { Helper } from 'src/utils/Helper';
+import { Sprite } from 'src/elements/Sprite';
 
 export class GameView extends View {
 
@@ -149,14 +150,9 @@ export class GameView extends View {
 	}
 
 	public shoot (): void {
-		let bullet: Bullet = this.bullets.find( bullet => bullet.isVanish );
-		if ( !bullet ) {
-			bullet = new Bullet( this.config.bullet );
-			this.field.addChild( bullet );
-			this.bullets.push( bullet );
-		} else {
-			bullet.isVanish = false;
-		}
+		let bullet: Bullet = new Bullet( this.config.bullet, this.field );
+		this.field.addChild( bullet );
+		this.bullets.push( bullet );
 		const posOffset: IPoint = { x: 0, y: 0 };
 		switch ( this.tank.direction ) {
 			case AngleDirection.LEFT:
@@ -177,41 +173,60 @@ export class GameView extends View {
 			this.tank.position.y - this.field.position.y + posOffset.y
 		)
 		bullet.setDirection( this.tank.direction );
-		this.bulletFly( bullet, 300, 200 );
+		bullet.startFly( 20 );
 	}
 
-	public bulletFly ( bullet: Bullet, distance: number, speed: number ): void {
-		const bulletFlyTween: Tween<Bullet> = new Tween( bullet )
-			.to( this.getFlyDestination( bullet, distance ), speed )
-			.onUpdate( () => {
-				for ( let material of this.materials ) {
-					if ( material.isVanish ) {
-						continue;
-					}
-					if ( CollisionSystem.isCollide( bullet, material ) ) {
-						bulletFlyTween.stop();
-						bullet.boom();
-						material.reduceHp( bullet.damage );
-						break;
-					}
+	public updateFrame (): void {
+		for ( let i: number = 0; i < this.bullets.length; i++ ) {
+			const bullet: Bullet = this.bullets[ i ];
+			if ( bullet.isFly ) {
+				bullet.fly();
+			}
+			let isBoom: boolean = false;
+			for ( let i in this.materials ) {
+				if ( this.materials[ i ].isVanish ) {
+					this.materials.splice( +i, 1 );
+					this.field.removeChild( this.materials[ i ] );
+					continue;
 				}
-			} )
+				if ( CollisionSystem.isCollide( bullet, this.materials[ i ] ) ) {
+					this.materials[ i ].reduceHp( bullet.damage );
+					isBoom = true;
+					break;
+				}
+			}
+			if ( bullet.outOfField() || isBoom ) {
+				bullet.stopFly();
+				this.boom( bullet );
+				this.field.removeChild( bullet );
+				this.bullets.splice( i, 1 );
+			}
+		}
+	}
+
+	protected boom ( bullet: Bullet ): void {
+		const boomPos: IPoint = this.getBoomPosition( bullet );
+		const boom = new Sprite( this.config.boom );
+		boom.position.set( boomPos.x, boomPos.y );
+		this.field.addChild( boom );
+		new Tween( boom )
+			.to( { alpha: 0 }, 1000 )
 			.onComplete( () => {
-				bullet.boom();
+				this.field.removeChild( boom );
 			} )
 			.start();
 	}
 
-	protected getFlyDestination ( bullet: Bullet, distance: number ): object {
+	protected getBoomPosition ( bullet: Bullet ): IPoint {
 		switch ( bullet.direction ) {
-			case AngleDirection.LEFT:
-				return { x: bullet.x - distance };
 			case AngleDirection.UP:
-				return { y: bullet.y - distance };
-			case AngleDirection.RIGHT:
-				return { x: bullet.x + distance };
+				return { x: bullet.position.x, y: bullet.position.y - bullet.height * bullet.anchor.y };
 			case AngleDirection.DOWN:
-				return { y: bullet.y + distance };
+				return { x: bullet.position.x, y: bullet.position.y + bullet.height * ( 1 - bullet.anchor.y ) };
+			case AngleDirection.LEFT:
+				return { x: bullet.position.x - bullet.width * bullet.anchor.x, y: bullet.position.y };
+			case AngleDirection.RIGHT:
+				return { x: bullet.position.x + bullet.width * ( 1 - bullet.anchor.x ), y: bullet.position.y };
 		}
 	}
 

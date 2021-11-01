@@ -120,4 +120,8 @@ export class GameController extends Controller {
 			}
 		} );
 	}
+
+	public updateFrame (): void {
+		this.view.updateFrame();
+	}
 }
