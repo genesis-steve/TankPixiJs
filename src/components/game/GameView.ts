@@ -82,32 +82,32 @@ export class GameView extends View {
 	public moveTank ( direction: MoveDirection, speed: number ): void {
 		const angle: number = this.getTankAngleDirection( direction );
 		const scrollDirection: ScrollDirection = this.getFieldScrollDirection( this.tank.direction );
-		if ( this.isTankMovable( scrollDirection ) ) {
+		if ( this.isTankMovable( scrollDirection, speed ) ) {
 			this.field.scroll( scrollDirection, speed );
 		}
 		this.tank.setDirection( angle );
 	}
 
-	protected isTankMovable ( direction: ScrollDirection ): boolean {
-		let screenScroll: boolean = false;
+	protected isTankMovable ( direction: ScrollDirection, speed: number ): boolean {
+		let isScrollable: boolean = false;
 		switch ( direction ) {
 			case ScrollDirection.LEFT:
-				screenScroll = this.field.position.x + this.field.realWidth > this.tank.position.x + this.tank.width / 2;
+				isScrollable = this.field.position.x + this.field.realWidth > this.tank.position.x + this.tank.width / 2;
 				break;
 			case ScrollDirection.UP:
-				screenScroll = this.field.position.y + this.field.realHeight > this.tank.position.y + this.tank.height / 2;
+				isScrollable = this.field.position.y + this.field.realHeight > this.tank.position.y + this.tank.height / 2;
 				break;
 			case ScrollDirection.RIGHT:
-				screenScroll = this.field.position.x < this.tank.position.x - this.tank.width / 2;
+				isScrollable = this.field.position.x < this.tank.position.x - this.tank.width / 2;
 				break;
 			case ScrollDirection.DOWN:
-				screenScroll = this.field.position.y < this.tank.position.y - this.tank.height / 2;
+				isScrollable = this.field.position.y < this.tank.position.y - this.tank.height / 2;
 				break;
 		}
-		return screenScroll && !this.isTankCollideMaterial( direction );
+		return isScrollable && !this.isTankCollideMaterial( direction, speed );
 	}
 
-	protected isTankCollideMaterial ( direction: ScrollDirection ): boolean {
+	protected isTankCollideMaterial ( direction: ScrollDirection, speed: number ): boolean {
 		let collosionDirection: CollisionDirection;
 		switch ( direction ) {
 			case ScrollDirection.UP:
@@ -125,7 +125,7 @@ export class GameView extends View {
 		}
 		let isCollide: boolean = false;
 		for ( let material of this.materials ) {
-			if ( CollisionSystem.isCollide( this.tank, material, collosionDirection ) && !material.isVanish ) {
+			if ( CollisionSystem.isCollide( this.tank, material, speed, collosionDirection ) && !material.isVanish ) {
 				isCollide = true;
 			}
 		}
