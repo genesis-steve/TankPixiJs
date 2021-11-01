@@ -2,7 +2,10 @@ import { IBullet } from 'src/components/game/elements/Bullet';
 import { IMaterial } from 'src/components/game/elements/materials/Material';
 import { IPixelField } from 'src/components/game/elements/PixelField';
 import { ITank } from 'src/components/game/elements/Tank';
+import { AngleDirection } from 'src/config/GeneralInterface';
+import { ISprite } from 'src/elements/Sprite';
 import { IConfig } from 'src/ui/Config';
+import { TSMap } from 'typescript-map';
 
 export class GameConfig implements IGameConfig {
 
@@ -12,27 +15,49 @@ export class GameConfig implements IGameConfig {
 		name: 'tank',
 		position: { x: 640, y: 360 },
 		anchor: { x: 0.5, y: 0.5 },
-		assetName: 'tank.png',
-		moveSpeeds: [ 5, 10 ]
+		assetName: 'tank_right.png',
+		moveSpeeds: [ 2.5, 5 ],
+		assetNameMap: new TSMap<AngleDirection, string>( [
+			[ AngleDirection.UP, 'tank_up.png' ],
+			[ AngleDirection.DOWN, 'tank_down.png' ],
+			[ AngleDirection.LEFT, 'tank_left.png' ],
+			[ AngleDirection.RIGHT, 'tank_right.png' ]
+		] )
 	};
 
 	public bullet: IBullet = {
 		name: 'bullet',
 		assetName: 'bullet.png',
 		anchor: { x: 0.5, y: 0.5 },
-		boomAssetName: 'boom.png',
+		assetNameMap: new TSMap<AngleDirection, string>( [
+			[ AngleDirection.UP, 'bullet_up.png' ],
+			[ AngleDirection.DOWN, 'bullet_down.png' ],
+			[ AngleDirection.LEFT, 'bullet_left.png' ],
+			[ AngleDirection.RIGHT, 'bullet_right.png' ]
+		] ),
 		damage: 10
 	};
 
-	public materials: Array<IMaterial> = [
-		{
-			name: 'Rock',
-			assetName: 'rock.png',
-			dieAssetName: 'rock_die.png',
-			anchor: { x: 0.5, y: 0.5 },
-			hp: 50
-		}
-	];
+	public boom: ISprite = {
+		name: 'boom',
+		anchor: { x: 0.5, y: 0.5 },
+		assetName: 'boom.png'
+	}
+
+	public material: IMaterialSettings = {
+		sprites: [
+			{
+				name: MaterialType.WALL,
+				assetName: 'wall.png',
+				dieAssetName: 'wall_die.png',
+				anchor: { x: 0.5, y: 0.5 },
+				hp: 50
+			}
+		],
+		amountOfMaterial: new TSMap<string, number>( [
+			[ MaterialType.WALL, 10 ]
+		] )
+	};
 
 	protected tileTexture: Array<string> = [
 		'fieldTile1.png',
@@ -65,6 +90,16 @@ export class GameConfig implements IGameConfig {
 export interface IGameConfig extends IConfig {
 	tank: ITank;
 	bullet: IBullet;
-	materials: Array<IMaterial>;
+	boom: ISprite;
+	material: IMaterialSettings;
 	pixelField: IPixelField;
+}
+
+export interface IMaterialSettings {
+	sprites: Array<IMaterial>;
+	amountOfMaterial: TSMap<string, number>;
+}
+
+export enum MaterialType {
+	WALL = 'Wall'
 }

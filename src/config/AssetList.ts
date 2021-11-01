@@ -1,23 +1,47 @@
 export const list: Array<IAsset> = [
 	{
-		assetKey: 'tank.png',
-		assetUrl: 'assets/tank.png'
+		assetKey: 'tank_up.png',
+		assetUrl: 'assets/tank_up.png'
 	},
 	{
-		assetKey: 'bullet.png',
-		assetUrl: 'assets/bullet.png'
+		assetKey: 'tank_down.png',
+		assetUrl: 'assets/tank_down.png'
+	},
+	{
+		assetKey: 'tank_left.png',
+		assetUrl: 'assets/tank_left.png'
+	},
+	{
+		assetKey: 'tank_right.png',
+		assetUrl: 'assets/tank_right.png'
+	},
+	{
+		assetKey: 'bullet_up.png',
+		assetUrl: 'assets/bullet_up.png'
+	},
+	{
+		assetKey: 'bullet_down.png',
+		assetUrl: 'assets/bullet_down.png'
+	},
+	{
+		assetKey: 'bullet_left.png',
+		assetUrl: 'assets/bullet_left.png'
+	},
+	{
+		assetKey: 'bullet_right.png',
+		assetUrl: 'assets/bullet_right.png'
 	},
 	{
 		assetKey: 'boom.png',
 		assetUrl: 'assets/boom.png'
 	},
 	{
-		assetKey: 'rock.png',
-		assetUrl: 'assets/rock.png'
+		assetKey: 'wall.png',
+		assetUrl: 'assets/wall.png'
 	},
 	{
-		assetKey: 'rock_die.png',
-		assetUrl: 'assets/rock_die.png'
+		assetKey: 'wall_die.png',
+		assetUrl: 'assets/wall_die.png'
 	},
 	{
 		assetKey: 'fieldTile1.png',
